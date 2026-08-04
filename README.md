@@ -1,15 +1,11 @@
-# Bob — HDOS starter
-First working iPad-friendly web app for Hicks Directional Drilling.
+# Bob — HDOS v2
 
 Current capabilities:
 - Start a drilling day
-- Record morning pages
-- Record total footage, peds, notes, and photo count
-- Save the active day locally on the iPad
-- Install to the iPad Home Screen after deployment
+- Record assigned and actual pages
+- Add multiple bores with type, footage, and description
+- Validate bore footage against daily total
+- Record peds, locations, notes, and photo count
+- Save completed days to local history on the iPad
 
-Next build steps:
-1. Connect Supabase for permanent cloud storage.
-2. Upload Romney staking package and Martin production template.
-3. Generate production sheets.
-4. Add PDF redline editor and contractor package builder.
+Next milestone: connect Supabase for permanent cloud storage and real photo/file uploads.
