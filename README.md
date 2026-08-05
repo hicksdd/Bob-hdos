@@ -1,11 +1,17 @@
-# Bob — HDOS v2
+# Bob — HDOS v4
 
-Current capabilities:
+Cloud-connected iPad field app for Hicks Directional Drilling.
+
+## One-time setup
+Run `supabase-setup.sql` in Supabase SQL Editor.
+
+## Current capabilities
 - Start a drilling day
-- Record assigned and actual pages
-- Add multiple bores with type, footage, and description
-- Validate bore footage against daily total
-- Record peds, locations, notes, and photo count
-- Save completed days to local history on the iPad
+- Record pages, bores, footage, peds, notes, and photos
+- Validate footage totals
+- Upload photos to Supabase Storage
+- Save drilling days to Supabase
+- Load drilling history
 
-Next milestone: connect Supabase for permanent cloud storage and real photo/file uploads.
+## Security note
+This field-test build uses temporary anonymous RLS policies. Add employee login before storing sensitive financial or personnel data.
