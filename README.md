@@ -1,5 +1,13 @@
-# Bob — HDOS v5
+# Bob — HDOS v5.1
 
-Adds project creation, full DFN PDF upload, Martin production-template upload, project selection for daily assignments, and cloud-linked drilling days.
+Fixes the V5 iPad/Safari project upload error: `No content provided`.
 
-Run `supabase-v5-setup.sql` once in Supabase SQL Editor before using the Projects tab.
+Changes:
+- Reads DFN/template files into ArrayBuffer bytes before upload.
+- Rejects empty/unreadable files.
+- Shows file name, size, and type.
+- Shows upload step/progress.
+- Gives step-specific errors.
+- Uses the same byte upload method for jobsite photos.
+
+No new SQL is required if the V5 setup already ran successfully.
