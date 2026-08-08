@@ -1,12 +1,123 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#173d2f"><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="styles.css">
-<title>Bob — HDOS v5.3</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head><body><main class="app">
-<header><div class="brand">B</div><div><h1>Bob</h1><p>Hicks Directional Drilling</p></div><span id="cloudStatus">Checking cloud…</span></header>
-<nav class="tabs"><button class="tab active" data-tab="today">Today</button><button class="tab" data-tab="projects">Projects</button><button class="tab" data-tab="setup">Setup</button></nav>
-<section id="today" class="panel active"><div class="card"><h2>Today’s Assignment</h2><label>Project<select id="projectSelect"><option value="">Choose project</option></select></label><label>Morning page numbers<input id="assignedPages"></label><button id="startDay">Start Day</button><p id="startStatus"></p></div></section>
-<section id="projects" class="panel"><div class="card"><h2>Project Library</h2><label>Manage project<select id="libraryProjectSelect"><option value="">Choose project</option></select></label><div id="selectedProjectPanel" class="hidden"><label>DFN name<input id="dfnName" placeholder="DFN 2"></label><label>Revision<input id="dfnRevision" placeholder="Original / Rev A"></label><label>DFN PDF parts<input id="dfnFiles" type="file" accept="application/pdf,.pdf" multiple></label><div id="dfnMeta"></div><button id="uploadDfn">Upload DFN Revision</button><p id="dfnStatus"></p><h3>DFN Library</h3><div id="documentList"></div></div></div></section>
-<section id="setup" class="panel"><div class="card"><h2>Bob v5.3 Setup</h2><p>Run supabase-v5-3-setup.sql once, then expose project_document_parts in Data API settings.</p><button id="testCloud">Test v5.3 Connection</button><p id="testResult"></p></div></section>
-</main><script src="config.js"></script><script src="app.js"></script></body></html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173d2f">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
+<title>Bob — HDOS v5.2</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<main class="app">
+<header>
+  <div class="brand">B</div>
+  <div><h1>Bob</h1><p>Hicks Directional Drilling</p></div>
+  <span id="cloudStatus" class="cloud offline">Checking cloud…</span>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="today">Today</button>
+  <button class="tab" data-tab="projects">Projects</button>
+  <button class="tab" data-tab="history">History</button>
+  <button class="tab" data-tab="setup">Setup</button>
+</nav>
+
+<section id="today" class="panel active">
+  <section class="card">
+    <h2>Today’s Assignment</h2>
+    <label>Project
+      <select id="projectSelect"><option value="">Choose project</option></select>
+    </label>
+    <label>Morning page numbers
+      <input id="assignedPages" placeholder="Example: 6, 7, 8">
+    </label>
+    <button id="startDay">Start Day</button>
+    <p id="startStatus" class="status"></p>
+  </section>
+
+  <section class="card">
+    <h2>End of Day</h2>
+    <label>Actual pages worked<input id="actualPages" placeholder="Example: 6, 7, 8"></label>
+    <label>Total footage<input id="totalFootage" inputmode="numeric" placeholder="Example: 1200"></label>
+    <div class="section-head"><h3>Bores</h3><button class="small secondary" id="addBore" type="button">+ Add bore</button></div>
+    <div id="bores"></div>
+    <label>Pedestals installed<input id="pedestals" inputmode="numeric" placeholder="0"></label>
+    <label>Pedestal locations<textarea id="pedLocations" rows="3"></textarea></label>
+    <label>General notes<textarea id="notes" rows="4"></textarea></label>
+    <label>Jobsite photos<input id="dayPhotos" type="file" accept="image/*" multiple></label>
+    <div id="dayPhotoPreview" class="photo-preview"></div>
+    <div id="footageCheck" class="check neutral">Add bore footage to compare against the daily total.</div>
+    <button id="saveDay">Save Completed Day</button>
+    <p id="saveStatus" class="status"></p>
+  </section>
+</section>
+
+<section id="projects" class="panel">
+  <section class="card">
+    <h2>Create Project</h2>
+    <label>Project name<input id="newProjectName" placeholder="Example: Romney"></label>
+    <label>Contractor<input id="contractor" value="Martin Irrigation"></label>
+    <button id="createProject">Create Project</button>
+    <p id="projectStatus" class="status"></p>
+  </section>
+
+  <section class="card">
+    <div class="section-head"><h2>Project Library</h2><button class="small secondary" id="refreshProjects">Refresh</button></div>
+    <label>Manage project
+      <select id="libraryProjectSelect"><option value="">Choose project</option></select>
+    </label>
+
+    <div id="selectedProjectPanel" class="hidden">
+      <div class="project-summary" id="selectedProjectSummary"></div>
+
+      <h3>Add DFN map / revision</h3>
+      <div class="grid2">
+        <label>DFN name<input id="dfnName" placeholder="Example: DFN 3"></label>
+        <label>Revision<input id="dfnRevision" placeholder="Example: Rev B"></label>
+      </div>
+      <label>DFN PDF (must be under Supabase file limit)
+        <input id="dfnFile" type="file" accept="application/pdf,.pdf">
+      </label>
+      <div id="dfnMeta" class="file-meta">No DFN selected.</div>
+      <button id="uploadDfn">Upload DFN / Revision</button>
+      <p id="dfnStatus" class="status"></p>
+
+      <hr>
+      <h3>Martin production-sheet template</h3>
+      <label>Template file
+        <input id="productionTemplate" type="file" accept=".xlsx,.xls,.pdf">
+      </label>
+      <div id="templateMeta" class="file-meta">No production template selected.</div>
+      <button id="uploadTemplate">Upload / Replace Current Template</button>
+      <p id="templateStatus" class="status"></p>
+
+      <hr>
+      <div class="section-head"><h3>DFN Library</h3><button class="small secondary" id="refreshDocs">Refresh</button></div>
+      <div id="documentList"></div>
+    </div>
+  </section>
+</section>
+
+<section id="history" class="panel">
+  <section class="card">
+    <div class="section-head"><h2>Cloud History</h2><button class="small secondary" id="refreshHistory">Refresh</button></div>
+    <div id="historyList"></div>
+  </section>
+</section>
+
+<section id="setup" class="panel">
+  <section class="card">
+    <h2>Bob v5.2 Setup</h2>
+    <p>Run <strong>supabase-v5-2-setup.sql</strong> once in Supabase SQL Editor, then expose <strong>project_documents</strong> in Data API settings.</p>
+    <button id="testCloud">Test v5.2 Connection</button>
+    <p id="testResult" class="status"></p>
+  </section>
+</section>
+</main>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
