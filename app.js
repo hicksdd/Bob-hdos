@@ -27,8 +27,11 @@ async function uploadFile(bucket,path,file){
   if(error)throw error;
   return data?.path||path;
 }
+function sortDfnFiles(fileList){
+  return [...fileList].sort((a,b)=>a.name.localeCompare(b.name, undefined, {numeric:true, sensitivity:"base"}));
+}
 function describeFiles(fileList){
-  const files=[...fileList];
+  const files=sortDfnFiles(fileList);
   if(!files.length)return "No DFN files selected.";
   return files.map((f,i)=>`Part ${i+1}: ${f.name} · ${f.size.toLocaleString()} bytes`).join(" | ");
 }
@@ -113,7 +116,7 @@ $("productionTemplate").onchange=()=>{$("templateMeta").textContent=describeFile
 
 $("uploadDfn").onclick=async()=>{
   if(!selectedProject)return $("dfnStatus").textContent="Choose a project first.";
-  const files=[...$("dfnFiles").files],name=$("dfnName").value.trim(),revision=$("dfnRevision").value.trim();
+  const files=sortDfnFiles($("dfnFiles").files),name=$("dfnName").value.trim(),revision=$("dfnRevision").value.trim();
   if(!name)return $("dfnStatus").textContent="Enter a DFN name.";
   if(!files.length)return $("dfnStatus").textContent="Choose one or more PDF parts.";
   const oversized=files.find(f=>f.size>50*1024*1024);
